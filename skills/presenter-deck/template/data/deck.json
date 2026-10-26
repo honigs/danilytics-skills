@@ -1,0 +1,282 @@
+{
+ "facts": {
+  "window": "2 Mar – 22 Mar 2026",
+  "ndays": "21",
+  "weekdays": "15",
+  "restart": "9 Mar",
+  "asof": "22 Mar 2026",
+  "sessions": "67,212",
+  "users_t": "11,210",
+  "users_c": "11,195",
+  "users": "22,405",
+  "split_t_low": "61%",
+  "untouched": "86%",
+  "ttfe_rel": "−28%",
+  "eps_rel": "+8%",
+  "m_users": "10,756",
+  "y_users": "11,649",
+  "exp_rel": "−3.4%",
+  "reread": "5 Apr",
+  "writeup_url": "#"
+ },
+ "D": {
+  "split": [
+   {
+    "name": "Test",
+    "sub": "compact default",
+    "v": {
+     "low": 61.0,
+     "mid": 21.0,
+     "high": 18.0
+    }
+   },
+   {
+    "name": "Control",
+    "sub": "standard default",
+    "v": {
+     "low": 4.0,
+     "mid": 79.0,
+     "high": 17.0
+    }
+   }
+  ],
+  "days": [
+   "2026-03-02",
+   "2026-03-03",
+   "2026-03-04",
+   "2026-03-05",
+   "2026-03-06",
+   "2026-03-07",
+   "2026-03-08",
+   "2026-03-09",
+   "2026-03-10",
+   "2026-03-11",
+   "2026-03-12",
+   "2026-03-13",
+   "2026-03-14",
+   "2026-03-15",
+   "2026-03-16",
+   "2026-03-17",
+   "2026-03-18",
+   "2026-03-19",
+   "2026-03-20",
+   "2026-03-21",
+   "2026-03-22"
+  ],
+  "dailyT": [
+   3.0,
+   3.06,
+   3.08,
+   3.2,
+   3.23,
+   2.96,
+   2.99,
+   2.33,
+   2.15,
+   2.31,
+   2.25,
+   2.32,
+   2.22,
+   2.37,
+   2.31,
+   2.26,
+   2.33,
+   2.23,
+   2.17,
+   2.29,
+   2.23
+  ],
+  "dailyC": [
+   2.97,
+   3.1,
+   2.98,
+   3.02,
+   3.07,
+   3.04,
+   3.2,
+   3.11,
+   3.08,
+   3.19,
+   3.21,
+   3.08,
+   3.15,
+   3.16,
+   3.23,
+   3.14,
+   3.15,
+   2.97,
+   3.21,
+   3.2,
+   3.22
+  ],
+  "launchIdx": 7,
+  "baseline": 3.07,
+  "sess": [
+   {
+    "name": "All users",
+    "sub": "edits per session",
+    "delta": 8.3,
+    "bars": [
+     {
+      "label": "Test",
+      "v": 8.91,
+      "extra": 1.45,
+      "col": "var(--treat)"
+     },
+     {
+      "label": "Control",
+      "v": 8.19,
+      "extra": 1.38,
+      "col": "var(--ctrl)"
+     }
+    ]
+   },
+   {
+    "name": "Free",
+    "sub": "edits per session",
+    "delta": 5.6,
+    "bars": [
+     {
+      "label": "Test",
+      "v": 6.87,
+      "extra": 1.16,
+      "col": "var(--treat)"
+     },
+     {
+      "label": "Control",
+      "v": 6.51,
+      "extra": 1.1,
+      "col": "var(--ctrl)"
+     }
+    ]
+   },
+   {
+    "name": "Pro",
+    "sub": "edits per session",
+    "delta": 8.5,
+    "bars": [
+     {
+      "label": "Test",
+      "v": 9.28,
+      "extra": 1.5,
+      "col": "var(--treat)"
+     },
+     {
+      "label": "Control",
+      "v": 8.51,
+      "extra": 1.43,
+      "col": "var(--ctrl)"
+     }
+    ]
+   },
+   {
+    "name": "Team",
+    "sub": "edits per session",
+    "delta": 11.7,
+    "bars": [
+     {
+      "label": "Test",
+      "v": 11.77,
+      "extra": 1.85,
+      "col": "var(--treat)"
+     },
+     {
+      "label": "Control",
+      "v": 10.44,
+      "extra": 1.76,
+      "col": "var(--ctrl)"
+     }
+    ]
+   }
+  ],
+  "twin": {
+   "monthly": [
+    {
+     "name": "Free",
+     "v": 5.9
+    },
+    {
+     "name": "Pro",
+     "v": 9.3
+    },
+    {
+     "name": "Team",
+     "v": 12.7
+    }
+   ],
+   "annual": [
+    {
+     "name": "Free",
+     "v": 5.2
+    },
+    {
+     "name": "Pro",
+     "v": 8.0
+    },
+    {
+     "name": "Team",
+     "v": 11.0
+    }
+   ],
+   "max": 13.97
+  },
+  "perUser": [
+   {
+    "label": "Time to first edit",
+    "rel": -21.4,
+    "real": true,
+    "b": 1
+   },
+   {
+    "label": "Edits per session",
+    "rel": 9.8,
+    "real": true,
+    "b": 1
+   },
+   {
+    "label": "Sessions per user",
+    "rel": 1.2,
+    "real": false,
+    "b": 2
+   },
+   {
+    "label": "Days active",
+    "rel": 2.1,
+    "real": false,
+    "b": 2
+   },
+   {
+    "label": "Exports per user",
+    "rel": -3.4,
+    "real": false,
+    "b": 3
+   }
+  ],
+  "ideas": [
+   {
+    "tag": "Idea 1",
+    "title": "Compact is faster to start",
+    "desc": "Less chrome on screen, so people reach the canvas sooner.",
+    "b": 1,
+    "kind": "yes",
+    "stamp": "YES · −28%"
+   },
+   {
+    "tag": "Idea 2",
+    "title": "People will switch back",
+    "desc": "Most users will change the default to standard.",
+    "b": 1,
+    "kind": "no",
+    "stamp": "NO · 86% KEEP IT"
+   },
+   {
+    "tag": "Idea 3",
+    "title": "Smaller preview, fewer exports",
+    "desc": "A smaller preview might make people export less.",
+    "b": 1,
+    "kind": "part",
+    "stamp": "NOT YET CLEAR"
+   }
+  ]
+ }
+}

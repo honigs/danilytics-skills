@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+/* ---- tokens: swap these for your own palette; every chart reads them, so dark mode comes free ---- */
+:root{--accent:#0d9488;--accent-dark:#0f766e;--accent-soft:#e6f6f4;--accent-line:#b5e3dd;
+--surface-1:#fcfcfb;--surface-2:#f2f3f1;--plane:#f6f7f6;--bg:#ffffff;
+--text-primary:#1d2733;--text-secondary:#52514e;--text-muted:#898781;--grid:#e6e7e3;--axis:#c3c2b7;--border:rgba(29,39,51,.12);
+--shadow:0 1px 2px rgba(29,39,51,.05),0 8px 24px rgba(29,39,51,.07);
+--neg:#c2410c;--warn:#9a6f00;
+--treat:#e07b16;--ctrl:#8a8f98;                       /* the two groups being compared */
+--q1:#9ECAE1;--q2:#4292C6;--q3:#08519C;--q1-t:#1d2733; /* an ordered 3-step scale (low / mid / high) */
+--s1:#0d9488;--s2:#e07b16;--s3:#4292C6;--s4:#8a8f98}  /* unordered series */
+[data-theme=dark]{--accent:#2dd4bf;--accent-dark:#5eead4;--accent-soft:#0f2a27;--accent-line:#1f4f49;
+--surface-1:#1a1a19;--surface-2:#232322;--plane:#0d0d0d;--bg:#111110;
+--text-primary:#fff;--text-secondary:#c3c2b7;--text-muted:#898781;--grid:#2c2c2a;--axis:#4a4a46;--border:rgba(255,255,255,.10);
+--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.5);
+--neg:#f97316;--warn:#f0c040;--treat:#f59a3c;--ctrl:#9aa0a8;
+--q1:#a9d3ec;--q2:#5aa6dc;--q3:#2f7fd0;--q1-t:#10161d;
+--s1:#2dd4bf;--s2:#f59a3c;--s3:#5aa6dc;--s4:#9aa0a8}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--plane);overflow:hidden}
+body{font:24px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--text-primary);-webkit-font-smoothing:antialiased}
+body.idle,body.idle *{cursor:none!important}
+b,strong{font-weight:680}
+a{color:var(--accent-dark)}
+#stage{position:fixed;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;background:var(--bg);box-shadow:0 0 0 1px var(--border),0 30px 80px rgba(0,0,0,.08);overflow:hidden}
+#bgglow{position:absolute;inset:0;background:radial-gradient(1200px 520px at 92% -12%,var(--accent-soft),transparent 62%);pointer-events:none}
+#prog{position:absolute;top:0;left:0;height:6px;background:var(--accent);width:0;transition:width .45s ease;z-index:20}
+.slide{position:absolute;inset:0;padding:72px 96px 110px;opacity:0;visibility:hidden;transition:opacity .5s ease,visibility 0s .5s}
+.slide.cur{opacity:1;visibility:visible;transition:opacity .5s ease}
+.eyebrow{font-size:18px;font-weight:750;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-dark);margin:0 0 10px}
+h1{font-size:96px;line-height:1.0;letter-spacing:-.03em;margin:0 0 40px;max-width:1300px}
+h2{font-size:54px;line-height:1.05;letter-spacing:-.022em;margin:0 0 6px}
+.sub{font-size:24px;color:var(--text-secondary);margin:0 0 30px}
+.hl{color:var(--accent-dark)}
+.hd{display:flex;align-items:flex-start;gap:26px;margin-bottom:26px}
+.qn{flex:none;width:68px;height:68px;border-radius:18px;background:var(--accent);color:#fff;font-weight:850;font-size:32px;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -5px 0 rgba(0,0,0,.16);margin-top:4px}
+[data-theme=dark] .qn{color:#0b1f1d}
+.card{background:var(--surface-1);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:26px 30px}
+/* ---- build mechanics: anything with data-b="n" appears when the slide's build counter reaches n ---- */
+.fx{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+.fx.on{opacity:1;transform:none}
+.gx{transform:scaleX(0);transform-origin:left center;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.gx.on{transform:none}
+.gy{transform:scaleY(0);transform-origin:center bottom;transition:transform .75s cubic-bezier(.2,.8,.2,1)}
+.gy.on{transform:none}
+.dr{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s cubic-bezier(.4,.1,.2,1)}
+.dr.on{stroke-dashoffset:0}
+.lab{opacity:0;transition:opacity .4s ease .45s}
+.on>.lab,.lab.on{opacity:1}
+html.noanim *{transition:none!important;animation:none!important}
+/* ---- shared slide furniture ---- */
+.stats{display:flex;gap:70px;margin-top:10px}
+.stats .n{font-size:68px;font-weight:820;letter-spacing:-.02em;line-height:1.05;font-variant-numeric:tabular-nums}
+.stats .k{font-size:22px;color:var(--text-secondary);max-width:320px}
+.verdict{display:inline-flex;align-items:center;gap:26px;margin-top:56px;padding:22px 34px 22px 22px;border-radius:26px;background:var(--accent-soft);border:2px solid var(--accent-line)}
+.chip{display:inline-block;font-weight:850;letter-spacing:.08em;border-radius:14px;padding:10px 22px;background:var(--accent);color:#fff;font-size:30px}
+[data-theme=dark] .chip{color:#0b1f1d}
+.verdict span{font-size:34px;font-weight:720;max-width:1080px}
+.keys{position:absolute;left:96px;bottom:56px;font-size:17px;color:var(--text-muted)}
+kbd{font:650 14px ui-monospace,Menlo,monospace;border:1px solid var(--border);border-bottom-width:3px;border-radius:6px;padding:1px 7px;background:var(--surface-1);color:var(--text-secondary)}
+svg text{font-family:inherit}
+.chartcard{padding:22px 26px 14px}
+.chartcard .gt{font-size:21px;font-weight:700;color:var(--text-secondary);margin-bottom:6px}
+.note{font-size:22px;color:var(--text-secondary);margin-top:18px;max-width:1350px}
+.note b{color:var(--text-primary)}
+.side{display:flex;flex-direction:column;gap:22px;justify-content:center}
+.side .card .n{font-size:52px;font-weight:840;line-height:1.05;color:var(--accent-dark)}
+.side .card .t{font-size:22px;color:var(--text-secondary);margin-top:6px}
+.reasons{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:20px}
+.reasons .card{border-top:8px solid var(--accent)}
+.reasons .card.watch{border-top-color:var(--treat)}
+.reasons .n{font-size:58px;font-weight:850;letter-spacing:-.02em;line-height:1.05;color:var(--accent-dark)}
+.reasons .watch .n{color:var(--treat)}
+.reasons .t{font-size:24px;color:var(--text-secondary);margin-top:10px;line-height:1.35}
+.reasons .t b{color:var(--text-primary)}
+.endlinks{position:absolute;left:96px;bottom:70px;font-size:20px;color:var(--text-muted)}
+/* ---- chrome ---- */
+#nav{position:absolute;left:0;right:0;bottom:0;height:62px;display:flex;align-items:center;gap:8px;padding:0 26px;z-index:20;transition:opacity .4s;background:linear-gradient(to top,var(--bg) 55%,transparent)}
+body.idle #nav,body.hidenav #nav,body.hidenav .keys{opacity:0}
+#nav button{font:600 16px system-ui;border:1px solid var(--border);background:var(--surface-1);color:var(--text-secondary);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
+#nav button.sub{padding:6px 10px;font-size:14px}
+#nav button.on{background:var(--accent-soft);color:var(--accent-dark);border-color:var(--accent-line)}
+#nav .sp{flex:1}
+#count{font:600 16px system-ui;color:var(--text-muted)}
+#brand{position:absolute;top:34px;right:44px;z-index:25;pointer-events:none;font:800 18px system-ui;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+#brand img{height:40px;display:block}
+#tip{position:fixed;z-index:100;pointer-events:none;background:var(--text-primary);color:var(--bg);font:600 15px/1.35 system-ui;padding:8px 12px;border-radius:10px;opacity:0;transition:opacity .15s;max-width:320px}
+#tip.show{opacity:1}
+#notes{position:fixed;left:20px;bottom:20px;width:min(560px,46vw);z-index:90;background:var(--surface-1);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:14px 18px;font:16px/1.45 system-ui;color:var(--text-primary);display:none}
+#notes.show{display:block}
+#notes .h{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);display:flex;justify-content:space-between}
+#notes p{margin:6px 0;color:var(--text-muted)}
+#notes p.now{color:var(--text-primary);font-weight:650}
+#help{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}
+#help.show{display:flex}
+#help .card{font:18px/1.7 system-ui;max-width:640px}
+#help td{padding:2px 14px 2px 0;vertical-align:top}
+/* presenter view (second window, #presenter=1) */
+body.presenter{overflow:auto;background:var(--bg)}
+body.presenter #stage{display:none}
+#pv{display:none;font:18px/1.45 system-ui;padding:26px 34px;color:var(--text-primary)}
+body.presenter #pv{display:block}
+#pv .top{display:flex;gap:30px;align-items:baseline;margin-bottom:18px}
+#pv .clock{font:800 64px ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+#pv .clock.over{color:var(--neg)}
+#pv .budget{color:var(--text-muted)}
+#pv .slide-t{font-size:30px;font-weight:800}
+#pv ol{padding-left:24px}
+#pv li{margin:8px 0;color:var(--text-muted)}
+#pv li.now{color:var(--text-primary);font-weight:700;font-size:24px}
+#pv li.done{color:var(--text-secondary)}
+#pv .ctl button{font:600 18px system-ui;padding:10px 20px;border-radius:12px;border:1px solid var(--border);background:var(--surface-1);color:var(--text-primary);cursor:pointer;margin-right:10px}
+#pv .bar{height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden;margin:6px 0 18px}
+#pv .bar i{display:block;height:100%;background:var(--accent)}
+{{CSS_EXTRA}}
+</style>
+</head>
+<body>
+<div id="stage">
+<div id="bgglow"></div>
+<div id="prog"></div>
+
+{{SLIDES}}
+<div id="brand">{{BRAND_HTML}}</div>
+<div id="nav"><div id="navBtns" style="display:flex;gap:6px"></div><div class="sp"></div><span id="count"></span></div>
+</div>
+
+<div id="tip"></div>
+<div id="notes"><div class="h"><span id="nTitle"></span><span id="nClock"></span></div><div id="nBody"></div></div>
+<div id="help"><div class="card"><table>
+<tr><td><kbd>→</kbd> <kbd>space</kbd> <kbd>click</kbd></td><td>next build</td></tr>
+<tr><td><kbd>←</kbd> <kbd>shift-click</kbd></td><td>back one build</td></tr>
+<tr><td><kbd>1</kbd>–<kbd>9</kbd> <kbd>0</kbd></td><td>jump to slide 1–10</td></tr>
+<tr><td><kbd>P</kbd></td><td>presenter view in a second window (script, timer, synced)</td></tr>
+<tr><td><kbd>N</kbd></td><td>script overlay on this screen</td></tr>
+<tr><td><kbd>H</kbd></td><td>hide the slide bar (for recording)</td></tr>
+<tr><td><kbd>D</kbd> <kbd>F</kbd></td><td>dark mode · full screen</td></tr>
+<tr><td><kbd>R</kbd></td><td>restart from the top, reset the timer</td></tr>
+</table></div></div>
+
+<div id="pv">
+ <div class="top"><div class="clock" id="pvClock">0:00</div><div class="budget" id="pvBudget"></div></div>
+ <div class="bar"><i id="pvBar"></i></div>
+ <div class="ctl"><button id="pvPrev">← Back</button><button id="pvNext">Next →</button><button id="pvReset">Reset timer</button></div>
+ <p class="slide-t" id="pvTitle"></p>
+ <ol id="pvList"></ol>
+ <p style="color:var(--text-muted)" id="pvNextUp"></p>
+</div>
+
+<script>
+const D={{DATA}};
+const DECK='{{DECK_ID}}';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const Q=new URLSearchParams(location.hash.slice(1));
+const PRES=Q.get('presenter')==='1';
+
+// ------------------------------------------------------------------ script: one line per build (index 0 = what you say on entering the slide)
+const NOTES={{NOTES}};
+
+{{CHARTS}}
+// ------------------------------------------------------------------ deck engine (generic; edit slides/charts, not this)
+const SL=$$('.slide'); let si=0, bi=0;
+const nb=i=>+SL[i].dataset.builds||0;
+const total=SL.reduce((s,x,i)=>s+nb(i)+1,0);
+const posOf=(i,b)=>SL.slice(0,i).reduce((s,x,k)=>s+nb(k)+1,0)+b;
+const chan=('BroadcastChannel' in window)?new BroadcastChannel(DECK+'-deck'):null;
+let t0=null;
+function render(push=true){
+ SL.forEach((s,i)=>{ s.classList.toggle('cur',i===si); });
+ const s=SL[si]; s.dataset.bi=bi;
+ s.querySelectorAll('[data-b]').forEach(e=>{ const on=bi>=+e.dataset.b; if(on!==e.classList.contains('on')) e.classList.toggle('on',on); });
+ $('#prog').style.width=(posOf(si,bi)/Math.max(1,total-1)*100)+'%';
+ $('#count').textContent=(si+1)+' / '+SL.length;
+ $$('#navBtns button').forEach((b,i)=>b.classList.toggle('on',i===si));
+ history.replaceState(null,'','#s='+(si+1)+'&b='+bi+(Q.get('noanim')?'&noanim=1':'')+(Q.get('theme')?'&theme='+Q.get('theme'):''));
+ renderNotes(); if(push&&chan) chan.postMessage({si,bi,t0});
+}
+function next(){ if(t0===null) t0=Date.now(); if(bi<nb(si)) bi++; else if(si<SL.length-1){ si++; bi=0; } render(); }
+function prev(){ if(bi>0) bi--; else if(si>0){ si--; bi=nb(si); } render(); }
+function jump(i,b=0){ si=Math.max(0,Math.min(SL.length-1,i)); bi=Math.min(b,nb(si)); render(); }
+function fit(){ const k=Math.min(innerWidth/1600,innerHeight/900); $('#stage').style.transform=`translate(-50%,-50%) scale(${k})`; }
+function renderNotes(){
+ const s=SL[si], N=NOTES[s.id]||{sec:0,l:[]};
+ $('#nTitle').textContent=(si+1)+'. '+s.dataset.t+' · ~'+N.sec+'s';
+ $('#nBody').innerHTML=N.l.map((l,i)=>`<p class="${i===bi?'now':''}">${i===0?'':'['+i+'] '}${l}</p>`).join('');
+}
+const budget=SL.map(s=>(NOTES[s.id]||{sec:0}).sec), BUDGET=budget.reduce((a,b)=>a+b,0);
+const mmss=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+function tick(){ const el=t0===null?0:(Date.now()-t0)/1000; $('#nClock').textContent=mmss(el)+' / '+mmss(BUDGET);
+ if(PRES){ $('#pvClock').textContent=mmss(el); $('#pvClock').classList.toggle('over',el>BUDGET);
+  const plan=budget.slice(0,si+1).reduce((a,b)=>a+b,0); $('#pvBudget').textContent=`budget ${mmss(BUDGET)} · by the end of this slide: ${mmss(plan)}`;
+  $('#pvBar').style.width=Math.min(100,el/BUDGET*100)+'%'; } }
+setInterval(tick,250);
+
+function theme(t){ document.documentElement.dataset.theme=t; localStorage.setItem(DECK+'-theme',t);
+ const lg=$('#brand img'); if(lg&&lg.dataset.dark) lg.src=t==='dark'?lg.dataset.dark:lg.dataset.light; }
+
+// lint: a slide whose highest data-b differs from data-builds has a dead click or a build that never shows.
+// Problems go to the console and to <body data-lint> (scripts/shoot.py reads it).
+function lint(){ const p=[];
+ SL.forEach((s,i)=>{ const m=Math.max(0,...[...s.querySelectorAll('[data-b]')].map(e=>+e.dataset.b)); const n=nb(i);
+  if(m!==n) p.push(`slide ${i+1} (${s.id}): data-builds=${n} but highest data-b=${m}`);
+  const N=NOTES[s.id]; if(!N) p.push(`slide ${i+1} (${s.id}): no script`); else if(N.l.length!==n+1) p.push(`slide ${i+1} (${s.id}): ${N.l.length} script lines, expected ${n+1}`); });
+ if(p.length){ console.warn('deck lint:\n'+p.join('\n')); document.body.dataset.lint=p.join(' | '); } else document.body.dataset.lint='ok'; }
+
+if(PRES){
+ document.body.classList.add('presenter');
+ const draw=()=>{ const s=SL[si], N=NOTES[s.id]||{sec:0,l:[]};
+  $('#pvTitle').textContent=(si+1)+' / '+SL.length+' · '+s.dataset.t+' · ~'+N.sec+'s';
+  $('#pvList').innerHTML=N.l.map((l,i)=>`<li class="${i===bi?'now':i<bi?'done':''}">${l}</li>`).join('');
+  const nx=SL[si+1]; $('#pvNextUp').textContent=nx?'Next slide: '+nx.dataset.t:'Last slide';
+ };
+ const send=m=>chan&&chan.postMessage({cmd:m});
+ $('#pvNext').onclick=()=>send('next'); $('#pvPrev').onclick=()=>send('prev'); $('#pvReset').onclick=()=>send('reset');
+ addEventListener('keydown',e=>{ if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){ e.preventDefault(); send('next'); } if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); send('prev'); } });
+ if(chan) chan.onmessage=e=>{ const m=e.data; if(m.si!=null){ si=m.si; bi=m.bi; t0=m.t0; draw(); } };
+ if(chan) chan.postMessage({cmd:'hello'}); draw();
+} else {
+ drawCharts(); lint();
+ $('#navBtns').innerHTML=SL.map((s,i)=>`<button data-i="${i}"${s.dataset.nav?' class="sub"':''}>${s.dataset.nav||s.dataset.t}</button>`).join('');
+ $('#navBtns').onclick=e=>{ const b=e.target.closest('button'); if(b){ e.stopPropagation(); jump(+b.dataset.i); } };
+ if(Q.get('noanim')) document.documentElement.classList.add('noanim');
+ const s0=parseInt(Q.get('s')||'1',10)-1, b0=parseInt(Q.get('b')||'0',10); si=Math.max(0,Math.min(SL.length-1,isNaN(s0)?0:s0)); bi=Math.max(0,Math.min(nb(si),isNaN(b0)?0:b0));
+ if(chan) chan.onmessage=e=>{ const m=e.data; if(m.cmd==='next') next(); if(m.cmd==='prev') prev(); if(m.cmd==='reset'){ t0=null; render(); } if(m.cmd==='hello') render(); };
+ addEventListener('keydown',e=>{ if(e.metaKey||e.ctrlKey||e.altKey) return; const k=e.key;
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(k)){ e.preventDefault(); next(); }
+  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k)){ e.preventDefault(); prev(); }
+  else if(k==='Home') jump(0); else if(k==='End') jump(SL.length-1,nb(SL.length-1));
+  else if(/^[0-9]$/.test(k)) jump(k==='0'?9:+k-1);
+  else if(k==='n'||k==='N') $('#notes').classList.toggle('show');
+  else if(k==='p'||k==='P') window.open(location.pathname+'#presenter=1',DECK+'-presenter','width=900,height=760');
+  else if(k==='h'||k==='H') document.body.classList.toggle('hidenav');
+  else if(k==='d'||k==='D') theme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+  else if(k==='f'||k==='F'){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
+  else if(k==='r'||k==='R'){ t0=null; jump(0); }
+  else if(k==='?'||k==='/') $('#help').classList.toggle('show');
+  else if(k==='Escape') $('#help').classList.remove('show'); });
+ $('#stage').addEventListener('click',e=>{ if(e.target.closest('a,#nav')) return; if(e.shiftKey) prev(); else next(); });
+ $('#help').onclick=()=>$('#help').classList.remove('show');
+ let idle; const wake=()=>{ document.body.classList.remove('idle'); clearTimeout(idle); idle=setTimeout(()=>document.body.classList.add('idle'),2500); };
+ addEventListener('mousemove',wake); wake();
+ // tooltips only on elements already revealed, so hovering never leaks the next build
+ const tip=$('#tip'); document.addEventListener('mousemove',e=>{ const t=e.target.closest('[data-tip]'); if(t&&(t.classList.contains('on')||!t.dataset.b)){ tip.textContent=t.dataset.tip; tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px'; tip.classList.add('show'); } else tip.classList.remove('show'); });
+ addEventListener('resize',fit); fit(); render();
+}
+theme(Q.get('theme')||localStorage.getItem(DECK+'-theme')||'light');
+</script>
+</body>
+</html>

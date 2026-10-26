@@ -1,0 +1,13 @@
+PLAN,BILLING,ARM,USERS,EDITS_PER_SESSION,FOLLOW_ON
+Free,monthly,test,2373,6.57,1.16
+Free,monthly,control,2361,6.2,1.1
+Free,annual,test,2377,7.17,1.16
+Free,annual,control,2326,6.82,1.1
+Pro,monthly,test,1580,8.87,1.5
+Pro,monthly,control,1575,8.06,1.43
+Pro,annual,test,1949,9.62,1.5
+Pro,annual,control,1938,8.87,1.43
+Team,monthly,test,1437,11.31,1.85
+Team,monthly,control,1430,9.92,1.76
+Team,annual,test,1494,12.21,1.85
+Team,annual,control,1565,10.91,1.76

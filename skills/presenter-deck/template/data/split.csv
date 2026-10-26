@@ -1,0 +1,7 @@
+ARM,LAYOUT,SESSIONS,UNTOUCHED
+test,low,25174,21649
+test,mid,8666,4333
+test,high,7428,3714
+control,low,1650,825
+control,mid,32603,16301
+control,high,7015,3507

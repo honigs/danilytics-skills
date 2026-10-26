@@ -1,0 +1,53 @@
+{
+ "_how": "One entry per slide id. sec = seconds budget for the slide. l = what you say: line 0 on entering the slide, then one line per build (so data-builds + 1 lines). {{key}} placeholders are filled from facts.",
+ "intro": {"sec": 15, "l": [
+  "We tested one change in the editor: what happens if it opens in the compact layout instead of standard?",
+  "About {{users}} users, split at random, {{ndays}} days of data.",
+  "Short answer: make compact the default. Here's why."]},
+ "setup": {"sec": 15, "l": [
+  "The set-up is simple.",
+  "The test: half the users opened the editor in compact.",
+  "The control: the other half kept standard, as today.",
+  "New documents only, data after the restart, and the two groups matched before it began."]},
+ "ideas": {"sec": 15, "l": [
+  "Going in, we had three ideas about what could happen.",
+  "Compact is faster to start; people will switch back; and a smaller preview might mean fewer exports. Let's see which held."]},
+ "split": {"sec": 30, "l": [
+  "First, what did people actually use?",
+  "In the test, {{split_t_low}} of sessions ran in compact. In the control almost nobody chooses it.",
+  "Standard falls to a minority in the test.",
+  "And wide barely moves: people who want more space still find it.",
+  "{{untouched}} of compact sessions come from people who never touched the picker."]},
+ "daily": {"sec": 30, "l": [
+  "Is it faster? Here's time to first edit, every day.",
+  "Before the switch, both groups sit on the same line. That's our check that the split is fair.",
+  "The day the new default goes on, the test group drops.",
+  "And it stays down: {{ttfe_rel}} over the test window. No novelty fade."]},
+ "session": {"sec": 30, "l": [
+  "Do people do more once they're in?",
+  "Overall, test sessions have more edits, follow-on edits included.",
+  "By plan, every plan moves the same way.",
+  "{{eps_rel}} edits per session overall."]},
+ "session2": {"sec": 20, "l": [
+  "Does it differ by billing period?",
+  "Monthly subscribers: every plan up.",
+  "Annual: the same picture, on the same scale."]},
+ "peruser": {"sec": 25, "l": [
+  "Putting it together, per user.",
+  "Faster to start and more edits per session: both real differences.",
+  "Sessions and active days: no clear change, so nobody is using us less.",
+  "Exports: {{exp_rel}}, but not a real difference yet."]},
+ "score": {"sec": 25, "l": [
+  "The short version, outcome by outcome.",
+  "Speed: better, and the feedback agrees.",
+  "Engagement: up.",
+  "Exports are the one to watch."]},
+ "ideas2": {"sec": 15, "l": [
+  "Back to our three ideas.",
+  "Faster: yes. Switching back: no. Fewer exports: not clear yet."]},
+ "verdict": {"sec": 15, "l": [
+  "So our suggestion: make compact the default.",
+  "It's {{ttfe_rel}} on time to first edit.",
+  "People use the editor just as much.",
+  "Exports we'll re-read on {{reread}}."]}
+}

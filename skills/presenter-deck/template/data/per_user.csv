@@ -1,0 +1,6 @@
+METRIC,GROUP,REL_PCT,P_VALUE
+Time to first edit,1,-21.4,0.001
+Edits per session,1,9.8,0.004
+Sessions per user,2,1.2,0.61
+Days active,2,2.1,0.38
+Exports per user,3,-3.4,0.21

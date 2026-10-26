@@ -1,0 +1,100 @@
+<!-- Each slide is a section element with class "slide", an id, data-builds="N" data-t="Nav label">. Elements with data-b="1…N" appear one click at a time.
+     data-nav="↳ M/A" makes a small nav button for a follow-on slide. Every number is a double-brace placeholder filled from deck.json facts. -->
+
+<!-- 1 · TITLE -->
+<section class="slide" id="intro" data-builds="2" data-t="Title">
+ <p class="eyebrow" style="margin-top:40px">Editor · A/B test readout · {{window}}</p>
+ <h1>Should the editor open in the <span class="hl">compact</span> layout?</h1>
+ <div class="stats fx" data-b="1">
+  <div><div class="n">{{users}}</div><div class="k">users, split 50/50 at random</div></div>
+  <div><div class="n">{{sessions}}</div><div class="k">editing sessions</div></div>
+  <div><div class="n">{{ndays}} days</div><div class="k">of data, {{weekdays}} of them weekdays</div></div>
+ </div>
+ <div class="verdict fx" data-b="2"><div class="chip">ACT</div><span>Make compact the default.</span></div>
+ <div class="keys"><kbd>→</kbd> next · <kbd>←</kbd> back · <kbd>P</kbd> presenter view · <kbd>?</kbd> all keys</div>
+</section>
+
+<!-- 2 · SET-UP -->
+<section class="slide" id="setup" data-builds="3" data-t="The test">
+ <div class="hd"><div class="qn">1</div><div><p class="eyebrow">The set-up</p><h2>One layout picker, two defaults</h2></div></div>
+ <div class="arms">
+  <div class="card arm t fx" data-b="1"><h3>Test · compact default</h3><div class="who">{{users_t}} users open in compact</div></div>
+  <div class="card arm c fx" data-b="2"><h3>Control · standard default</h3><div class="who">{{users_c}} users, as today</div></div>
+ </div>
+ <div class="chips fx" data-b="3">
+  <div><b>New documents only</b>Templates are not part of the test.</div>
+  <div><b>Clean window</b>Only data after the {{restart}} restart.</div>
+  <div><b>A fair split</b>Random by user; both groups behaved alike before the test.</div>
+ </div>
+</section>
+
+<!-- 3 · IDEAS BOARD (no verdicts yet) -->
+<section class="slide" id="ideas" data-builds="1" data-t="What we suspected">
+ <div class="hd"><div class="qn">2</div><div><p class="eyebrow">Going in</p><h2>Three things the test could show</h2></div></div>
+ <div class="board" id="boardA"></div>
+</section>
+
+<!-- 4 · SPLIT (stacked bars that build key by key) -->
+<section class="slide" id="split" data-builds="4" data-t="Usage split">
+ <div class="hd"><div class="qn">3</div><div><p class="eyebrow">What people used</p><h2>Most people keep the layout they're given</h2></div></div>
+ <div id="splitBars"></div>
+ <div class="side fx" data-b="4" style="max-width:820px;margin-top:20px"><div class="card"><div class="n">{{untouched}}</div><div class="t">of compact sessions come from people who <b>never touched the picker</b></div></div></div>
+</section>
+
+<!-- 5 · OVER TIME (one line told in chapters) -->
+<section class="slide" id="daily" data-builds="3" data-t="Over time">
+ <div class="hd"><div class="qn">4</div><div><p class="eyebrow">Time to first edit</p><h2>Faster from day one, and it holds</h2></div></div>
+ <div class="card chartcard"><svg id="dailySvg" width="100%"></svg></div>
+</section>
+
+<!-- 6 · GROUPED BARS + FROM→TO -->
+<section class="slide" id="session" data-builds="3" data-t="Per session">
+ <div class="hd"><div class="qn">5</div><div><p class="eyebrow">Counting follow-on edits</p><h2>More edits per session, every plan</h2></div></div>
+ <div class="legend"><span><i style="background:var(--treat)"></i>Test</span><span><i style="background:var(--ctrl)"></i>Control</span><span><i style="background:var(--axis);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.6) 0 4px,transparent 4px 8px)"></i>follow-on edits</span></div>
+ <div class="vgroups" id="sessGroups"></div>
+</section>
+
+<!-- 7 · TWIN PANES (same chart, two cuts, one scale) -->
+<section class="slide" id="session2" data-builds="2" data-t="Per session · monthly vs annual" data-nav="↳ M/A">
+ <div class="hd"><div class="qn">5</div><div><p class="eyebrow">Monthly vs annual</p><h2>Same story on both billing periods</h2></div></div>
+ <div class="twin">
+  <div class="pane"><div class="pt fx" data-b="1">Monthly<small>{{m_users}} users</small></div><div id="twinA"></div></div>
+  <div class="pane"><div class="pt fx" data-b="2">Annual<small>{{y_users}} users</small></div><div id="twinB"></div></div>
+ </div>
+</section>
+
+<!-- 8 · PER USER (diverging bars, significance in colour) -->
+<section class="slide" id="peruser" data-builds="3" data-t="Per user">
+ <div class="hd"><div class="qn">6</div><div><p class="eyebrow">Per user, all together</p><h2>Faster, and no less use</h2></div></div>
+ <div class="sub">Change per user, test against control. <span style="color:var(--treat);font-weight:700">Orange</span> = a real difference; grey = no clear change.</div>
+ <div id="puRows"></div>
+</section>
+
+<!-- 9 · SCORECARD -->
+<section class="slide" id="score" data-builds="3" data-t="Scorecard">
+ <div class="hd"><div class="qn">7</div><div><p class="eyebrow">The short version</p><h2>Each outcome, against what it could have hurt</h2></div></div>
+ <table class="sc">
+  <tr><th></th><th>Speed</th><th>Engagement</th><th>Feedback</th></tr>
+  <tr class="fx" data-b="1"><td class="st">Time to first edit<small>per session</small></td><td><span class="pill g">Better</span>{{ttfe_rel}} faster</td><td><span class="pill n">n/a</span></td><td><span class="pill g">Positive</span>"finally fits my laptop"</td></tr>
+  <tr class="fx" data-b="2"><td class="st">Edits<small>per session</small></td><td><span class="pill n">n/a</span></td><td><span class="pill g">Up</span>{{eps_rel}} edits per session</td><td><span class="pill n">None</span></td></tr>
+  <tr class="fx" data-b="3"><td class="st">Exports<small>per user</small></td><td><span class="pill n">n/a</span></td><td><span class="pill y">Watch</span>{{exp_rel}}, not significant</td><td><span class="pill r">2 complaints</span>preview too small</td></tr>
+ </table>
+</section>
+
+<!-- 10 · BOARD AGAIN, WITH VERDICT STAMPS -->
+<section class="slide" id="ideas2" data-builds="1" data-t="Verdicts">
+ <div class="hd"><div class="qn">8</div><div><p class="eyebrow">Coming back to it</p><h2>What held up</h2></div></div>
+ <div class="board" id="boardB"></div>
+</section>
+
+<!-- 11 · VERDICT -->
+<section class="slide" id="verdict" data-builds="3" data-t="Verdict">
+ <p class="eyebrow" style="margin-top:20px">Our suggestion</p>
+ <h1 style="font-size:80px;margin-bottom:46px">Make compact the default layout.</h1>
+ <div class="reasons">
+  <div class="card fx" data-b="1"><div class="n">{{ttfe_rel}}</div><div class="t"><b>time to first edit</b>, every day of the test.</div></div>
+  <div class="card fx" data-b="2"><div class="n">No less use</div><div class="t">Same sessions per user, and <b>{{eps_rel}}</b> edits per session.</div></div>
+  <div class="card watch fx" data-b="3"><div class="n">{{exp_rel}}</div><div class="t">exports per user: not a real difference yet. <b>Re-read on {{reread}}.</b></div></div>
+ </div>
+ <div class="endlinks">Full analysis, method and statistics: <a href="{{writeup_url}}" target="_blank" rel="noopener">write-up</a> · data {{window}}, as of {{asof}}</div>
+</section>
